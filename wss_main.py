@@ -1,5 +1,10 @@
-#Steam market bruteforcer for winter games 2016
+#Steam Winter Sale Sleuth for the 2015/2016 sale
 #Author: Coburn
+
+#This logs you into steam and queries every appId for passwords in a given array below
+#See Readme.md for more info
+
+#USAGE: python wss_main.py
 
 import gzip
 import json
