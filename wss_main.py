@@ -184,7 +184,13 @@ def main(passwords, appIds):
     print("SUCCESS")
     
     #Test passwords against all appIds
-    appIdOffset = 0 #Offsets the first iteration
+    appIdOffsetObj = 301242 #Offset by an appId value
+    if appIdOffsetObj != 0:
+        for i, id in enumerate(appIds):
+            if appIdOffsetObj > int(id):
+                appIdOffset = i
+    appIdOffset = appIdOffset if appIdOffset != 0 else 0 #Offsets the first iteration by an index
+    
     for pwd in passwords:
         print("["+pwd+"]")
         for i in range(appIdOffset,len(appIds)-1):
@@ -193,11 +199,13 @@ def main(passwords, appIds):
             try:
                 didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
             except Exception as e:
-                print("->[ERROR:" + e.__class__.__name__ + "]")
+                print("->[ERROR]")
                 option = input("Retry and continue with " + pwd + " @ " + id + " (Y/N)?")
-                if re.search("y", option, re.i) == None:
+                if re.search("^y$", option, re.I) == None:
                     raise
                 else:
+                    import traceback
+                    print(traceback.format_exc())
                     i = i-1
                 
             if(didWeGetSomethingOhBoy != []):
