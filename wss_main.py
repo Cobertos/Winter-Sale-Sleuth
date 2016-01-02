@@ -189,9 +189,10 @@ def main(passwords, appIds):
     for pwd in passwords:
         for id in appIds:
             didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
-            print(".", end="")
+            print(".", end="", flush=True)
             if(didWeGetSomethingOhBoy != []):
                 #Holy shit sholthahdsoajr2
+                print("") #Newline
                 logPrint("[Found]: " + didWeGetSomethingOhBoy)
             
             #Delay between sends
