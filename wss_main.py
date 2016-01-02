@@ -34,6 +34,15 @@ user_agent = "Steam Winter Sale 2015_16 Python Crawler"
 logFile = os.path.abspath(logFile)
 cookieFile = os.path.abspath(cookieFile)
 
+def hasnext(itr):
+    itr = iter(itr)
+    try:
+        next(itr)
+    except StopIteration:
+        return False
+    else:
+        return True
+
 logFile = open(logFile, 'a')
 
 def logPrint(myStr):
@@ -101,15 +110,19 @@ def hitSteamStore(pwd, appId, reqSession):
 def getNewSteamSession():
     global cookieFile
 
+    reqSession = None
+    
     #Check if the old one exists and
     #Only use if new enough (4 hours was an arbitrary choice)
-    if os.path.isfile(cookieFile) and time.time() > float(os.path.getmtime(cookieFile)) + (60*60*4):
+    if os.path.isfile(cookieFile) and time.time() < float(os.path.getmtime(cookieFile)) + (60*60*4):
         reqSession = requests.Session()
-        tmpCookieJar = LWPCookieJar(cookieFile)
-        reqSession.cookies = tmpCookieJar.load()
-        
-    #Otherwise Get a new login cookie
-    else:
+        reqSession.cookies = LWPCookieJar(cookieFile)
+        reqSession.cookies.load()
+        if hasnext(reqSession.cookies) == False: #No cookies
+            reqSession = None
+    
+    #Otherwise, if the cookies don't load or the file is too old
+    if reqSession == None:
         reqSession = requests.Session()
         reqSession.cookies = LWPCookieJar(cookieFile)
         respLogin = None
@@ -140,7 +153,7 @@ def getNewSteamSession():
                 raise RuntimeException("Steam login failed: " + str(respLogin))
             
             #Try a login
-            respLogin = loginSteam(loginUsr, loginPwd, emailAuth, captcha, captchaGID, reqSession).json()
+            respLogin = loginSteam(loginUsr, loginPwd, emailAuth, captcha, captchaGID, "", reqSession).json()
             
             #Save if success, otherwise try again and check for some other error
             if respLogin["success"]:
