@@ -22,9 +22,9 @@ import requests
 logFile = "./log.txt"               #Where to save your logs
 cookieFile = "./loginCookies.txt"   #Where to save your cookies
 passwords = [                       #The passwords to search
-    "8336041748881"
+    "sonofabitch"
 ]
-requestDelay = 0.033                #Delay between requests in seconds
+requestDelay = 0                #Delay between requests in seconds
 
 #END GLOBAL CONFIGURATION STUFF
 user_agent = "Steam Winter Sale 2015_16 Python Crawler"
@@ -184,29 +184,41 @@ def main(passwords, appIds):
     print("SUCCESS")
     
     #Test passwords against all appIds
-    appIdOffsetObj = 301242 #Offset by an appId value
+    appIdOffsetObj = 0 #Offset by an appId value
     if appIdOffsetObj != 0:
         for i, id in enumerate(appIds):
             if appIdOffsetObj > int(id):
                 appIdOffset = i
-    appIdOffset = appIdOffset if appIdOffset != 0 else 0 #Offsets the first iteration by an index
+    appIdOffset = appIdOffset if appIdOffsetObj != 0 else 0 #Offsets the first iteration by an index
     
     for pwd in passwords:
         print("["+pwd+"]")
         for i in range(appIdOffset,len(appIds)-1):
             id = appIds[i]
             print("_"+id, end="", flush=True)
-            try:
-                didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
-            except Exception as e:
-                print("->[ERROR]")
-                option = input("Retry and continue with " + pwd + " @ " + id + " (Y/N)?")
-                if re.search("^y$", option, re.I) == None:
-                    raise
-                else:
-                    import traceback
-                    print(traceback.format_exc())
-                    i = i-1
+            
+            #Try one permutation loop
+            tried = False
+            while not tried:
+                try:
+                    resp = hitSteamStore(pwd, id, reqSession)
+                    if resp.status_code != 200:
+                        print("[HTTP:" + resp.status_code + "]", end="")
+                        continue
+                    
+                    didWeGetSomethingOhBoy = resp.json()
+                    tried = True
+                except Exception as e:
+                    print("->[ERROR:" + e.__class__.__name__ + "]")
+                    option = input("Retry and continue with " + pwd + " @ " + id + " (Y/N)?")
+                    if re.search("^y$", option, re.I) == None:
+                        print(resp.text) #Might throw another exception but w/e for now
+                        raise
+                    else:
+                        import traceback
+                        print("Printing stack trace for viewing")
+                        print(traceback.format_exc())
+                    
                 
             if(didWeGetSomethingOhBoy != []):
                 #Holy shit sholthahdsoajr2
