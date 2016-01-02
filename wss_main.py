@@ -22,8 +22,6 @@ import requests
 logFile = "./log.txt"               #Where to save your logs
 cookieFile = "./loginCookies.txt"   #Where to save your cookies
 passwords = [                       #The passwords to search
-    "1v7531",
-    "94050999014715",
     "8336041748881"
 ]
 requestDelay = 0.033                #Delay between requests in seconds
@@ -187,6 +185,7 @@ def main(passwords, appIds):
     
     #Test passwords against all appIds
     for pwd in passwords:
+        print("["+pwd+"]")
         for id in appIds:
             didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
             print(".", end="", flush=True)
