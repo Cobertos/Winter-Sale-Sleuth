@@ -6,9 +6,10 @@ A Python bot that queries every AppID on the steam store for given passwords the
 ## What you need to run
 * Python
 * PyCrypto
-	* This is a C module and requires it be built before running. Users of some flavor of Linux will find this easy. Windows users will need to download the corresponding MSVS version and compile it (yuck!)
+	* This is a C module and needs to be compiled before running.
+	* `pip install pyCrypto` will download and install this but you'll probably get an error if you're not on Linux (`vcvarsall.bat missing` or a similar message)!
 	* Windows users (like me) can also find binaries at http://www.voidspace.org.uk/python/modules.shtml#pycrypto
-	* Windows users should download the binary corresponding to their version and bitness of Python install. If yours it not there, you can google and probably find one for your version of python
+	* Download the binary and run the installer for your version of python. If yours it not there, you can google and probably find one for your version of python.
 * Requests
 	* `pip install requests` will download and install this package to your python install
 	
