@@ -20,12 +20,13 @@ import requests
 
 #GLOBAL CONFIGURATION STUFF
 logFile = "./log.txt"               #Where to save your logs
-cookieFile = "./loginCookies.txt"     #Where to save your cookies
+cookieFile = "./loginCookies.txt"   #Where to save your cookies
 passwords = [                       #The passwords to search
     "1v7531",
     "94050999014715",
     "8336041748881"
 ]
+requestDelay = 0.033                #Delay between requests in seconds
 
 #END GLOBAL CONFIGURATION STUFF
 user_agent = "Steam Winter Sale 2015_16 Python Crawler"
@@ -166,18 +167,35 @@ def getNewSteamSession():
     return reqSession
 
 def main(passwords, appIds):
+    global requestDelay
+
     #Get a new steam session (Log in)
     reqSession = getNewSteamSession()
 
+    #Sanity check
+    print("Sanity check... ", end="")
+    resp = hitSteamStore("94050999014715", "6900", reqSession).json()
+    if not "response" in resp or resp["response"] != "ic/4f21ca7":
+        print("FAILED!")
+        if "response" in resp:
+            print("Response was \"" + resp["response"] + "\" not \"ic/4f21ca7\"")
+        else:
+            print("Response was not present in json")
+        raise RuntimeError("Sanity check failed.")
+    
+    print("SUCCESS")
+    
     #Test passwords against all appIds
     for pwd in passwords:
         for id in appIds:
-            print("Testing " + pwd + " on " + str(id) + "...  ", end="")
             didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
-            print("Response: " + str(didWeGetSomethingOhBoy))
+            print(".", end="")
             if(didWeGetSomethingOhBoy != []):
                 #Holy shit sholthahdsoajr2
                 logPrint("[Found]: " + didWeGetSomethingOhBoy)
+            
+            #Delay between sends
+            time.sleep(requestDelay)
     
 if __name__ == "__main__":
     #Get app ids from xPaw
