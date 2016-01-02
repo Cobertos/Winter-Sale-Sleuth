@@ -184,11 +184,22 @@ def main(passwords, appIds):
     print("SUCCESS")
     
     #Test passwords against all appIds
+    appIdOffset = 0 #Offsets the first iteration
     for pwd in passwords:
         print("["+pwd+"]")
-        for id in appIds:
-            didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
-            print(".", end="", flush=True)
+        for i in range(appIdOffset,len(appIds)-1):
+            id = appIds[i]
+            print("_"+id, end="", flush=True)
+            try:
+                didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
+            except Exception as e:
+                print("->[ERROR:" + e.__class__.__name__ + "]")
+                option = input("Retry and continue with " + pwd + " @ " + id + " (Y/N)?")
+                if re.search("y", option, re.i) == None:
+                    raise
+                else:
+                    i = i-1
+                
             if(didWeGetSomethingOhBoy != []):
                 #Holy shit sholthahdsoajr2
                 print("") #Newline
@@ -196,12 +207,16 @@ def main(passwords, appIds):
             
             #Delay between sends
             time.sleep(requestDelay)
+        
+        appIdOffset = 0 #Only offset the first iteration
     
 if __name__ == "__main__":
     #Get app ids from xPaw
     appIds = requests.request("GET","https://s.xpaw.me/appids_with_prices.txt").text
     appIds = re.split("\\r?\\n", appIds)
     appIds[:] = [id for id in appIds if re.search("^\\d+$", id) != None]
+    
+    
     
     main(passwords, appIds)
     
