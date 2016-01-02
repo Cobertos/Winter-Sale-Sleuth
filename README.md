@@ -1,7 +1,7 @@
 # Winter Sale Sleuth
 ### A bot for Steam's Winter 2015/2016 ARG 
 
-This is a Python bot that queries every AppID on the steam store for given passwords the user enters.
+A Python bot that queries every AppID on the steam store for given passwords the user enters.
 
 ## What you need to run
 * Python
