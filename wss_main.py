@@ -159,8 +159,9 @@ def main(passwords, appIds):
     #Test passwords against all appIds
     for pwd in passwords:
         for id in appIds:
-            print("Testing " + pwd + " on " + str(id) + "...")
+            print("Testing " + pwd + " on " + str(id) + "...  ", end="")
             didWeGetSomethingOhBoy = hitSteamStore(pwd, id, reqSession).json()
+            print("Response: " + str(didWeGetSomethingOhBoy))
             if(didWeGetSomethingOhBoy != []):
                 #Holy shit sholthahdsoajr2
                 logPrint("[Found]: " + didWeGetSomethingOhBoy)
